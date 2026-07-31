@@ -1,0 +1,9 @@
+# Hermes Agent derivative — image identity (overrides the llama.cpp image block).
+tools:
+  - name: hermes
+    description: Hermes Agent CLI and dashboard runtime
+
+image:
+  name: Hermes Agent
+  readme: https://github.com/vast-ai/base-image/tree/main/derivatives/llama-cpp/derivatives/hermes-agent
+  preinstalled: llama.cpp + Hermes Agent dashboard

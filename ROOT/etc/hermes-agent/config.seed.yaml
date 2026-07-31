@@ -1,0 +1,4 @@
+model:
+  provider: "__HERMES_MODEL_PROVIDER__"
+  base_url: "__HERMES_MODEL_BASE_URL__"
+  default: "__HERMES_MODEL__"
