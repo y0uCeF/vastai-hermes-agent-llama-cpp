@@ -4,12 +4,12 @@ A Hermes Agent image derived from the Vast.ai [llama.cpp image](https://hub.dock
 
 ## How This Image Works
 
-This image extends a concrete `vastai/llama-cpp` base (`b9264-cuda-12.9`) with a pinned Hermes Agent install (`v2026.7.20`) using Hermes' documented Linux installer flow in non-interactive mode.
+This image extends a concrete `vastai/llama-cpp` base (`b10182-cuda-12.9`) with a pinned Hermes Agent install (`v2026.7.20`) using Hermes' documented Linux installer flow in non-interactive mode.
 
 At runtime:
 
 - `llama-server` remains a Supervisor-managed service, but only on `127.0.0.1:18000`
-- `hermes dashboard` is the primary portal app on port `9119`
+- `hermes dashboard` is the primary portal app on port `19119`
 - Hermes runtime state lives under `${WORKSPACE:-/workspace}/.hermes`
 - `config.yaml` is materialized at startup from one of:
   1. `HERMES_CONFIG_URL`
@@ -42,7 +42,7 @@ At runtime:
 | Service | External Port | Internal Port |
 |---------|---------------|---------------|
 | Instance Portal | 1111 | 11111 |
-| Hermes Dashboard | 9119 | 9119 |
+| Hermes Dashboard | 9119 | 19119 |
 | Jupyter | 8080 | 18080 |
 | llama.cpp | (internal only) | 18000 |
 
@@ -64,8 +64,8 @@ git clone https://github.com/y0uCeF/vastai-hermes-llamacpp.git
 cd vastai-hermes-llamacpp
 
 docker buildx build \
-    --build-arg LLAMA_CPP_BASE=vastai/llama-cpp:b9264-cuda-12.9 \
-    --build-arg HERMES_REF=v2026.7.20 \
+    --build-arg LLAMA_CPP_BASE=vastai/llama-cpp:b10182-cuda-12.9 \
+    --build-arg HERMES_REF=v2026.7.30 \
     -t yournamespace/hermes-agent .
 ```
 
