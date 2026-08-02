@@ -4,9 +4,9 @@
   <!-- Replace these with real files in /assets/logos -->
   <img src="./assets/logos/hermes-agent.png" alt="Hermes Agent" height="72" />
   &nbsp;&nbsp;
-  <img src="./assets/logos/llama-cpp.png" alt="llama.cpp" height="72" />
+  <img src="./assets/logos/logo-llama-cpp-dark.svg" alt="llama.cpp" height="72" />
   &nbsp;&nbsp;
-  <img src="./assets/logos/vast-ai.png" alt="Vast.ai" height="72" />
+  <img src="./assets/logos/vast-ai-logo.png" alt="Vast.ai" height="72" />
 </p>
 
 <p align="center">
