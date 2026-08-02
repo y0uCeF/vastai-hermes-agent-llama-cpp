@@ -29,12 +29,10 @@ This repository produces a container image intended to run on **Vast.ai** with:
 
 ## 🧭 Quick Start (Vast.ai)
 
-1. Open/import the provided Vast template definition:
-   - [`templates/default/template.yml`](./templates/default/template.yml)
-2. Launch an instance on Vast.ai using that template.
-3. Open the Hermes dashboard on port **`19119`**.
+1. Click **[Create an Instance](https://cloud.vast.ai/?ref_id=68321&creator_id=68321&name=Hermes%20Agent)**.
+2. Open the Hermes dashboard on port **`19119`** from the Instance Portal.
 
-For template-specific details and fields, see:
+For template-specific fields and advanced configuration options, see:
 - [`templates/default/README.md`](./templates/default/README.md)
 
 ---
