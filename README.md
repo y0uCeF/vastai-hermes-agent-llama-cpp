@@ -1,85 +1,147 @@
-# Hermes Agent Image
+# 🚀 Hermes Agent + llama.cpp on Vast.ai
 
-A Hermes Agent image derived from the Vast.ai [llama.cpp image](https://hub.docker.com/r/vastai/llama-cpp). It keeps llama.cpp running privately on `127.0.0.1:18000` and exposes Hermes Agent's dashboard as the primary user-facing app.
+<p align="center">
+  <!-- Replace these with real files in /assets/logos -->
+  <img src="./assets/logos/hermes-agent.png" alt="Hermes Agent" height="72" />
+  &nbsp;&nbsp;
+  <img src="./assets/logos/llama-cpp.png" alt="llama.cpp" height="72" />
+  &nbsp;&nbsp;
+  <img src="./assets/logos/vast-ai.png" alt="Vast.ai" height="72" />
+</p>
 
-## How This Image Works
+<p align="center">
+  <b>A Vast.ai-focused image template for Hermes Agent, backed by a private llama.cpp server.</b>
+</p>
 
-This image extends a concrete `vastai/llama-cpp` base (`b10182-cuda-12.9`) with a pinned Hermes Agent install (`v2026.7.31`) using Hermes' documented Linux installer flow in non-interactive mode.
+---
 
-At runtime:
+## ✨ What this repository provides
 
-- `llama-server` remains a Supervisor-managed service, but only on `127.0.0.1:18000`
-- `hermes dashboard` is the primary portal app on port `19119`
-- Hermes runtime state lives under `${WORKSPACE:-/workspace}/.hermes`
-- `config.yaml` is materialized at startup from one of:
-  1. `HERMES_CONFIG_URL`
-  2. `HERMES_CONFIG_B64`
-  3. `HERMES_CONFIG_INLINE`
-  4. the baked seed config
-- the baked seed config points Hermes at the local llama.cpp OpenAI-compatible endpoint on `http://127.0.0.1:18000/v1`
+This repository produces a container image intended to run on **Vast.ai** with:
 
-## Runtime Configuration
+- 🧠 **Hermes Agent dashboard** (user-facing)
+- 🦙 **llama.cpp server** (private, internal-only)
+- 🧰 **Vast.ai runtime integrations** (portal + startup hooks + capabilities)
 
-### Environment Variables
+> 📌 **Scope:** This project is intended for **Vast.ai usage**, not for general local Docker usage by end users.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `LLAMA_MODEL` | `unsloth/Qwen3.6-27B-GGUF:UD-Q4_K_XL` | HuggingFace GGUF repo to load into the bundled llama.cpp server |
-| `LLAMA_ARGS` | `--host 127.0.0.1 --port 18000` | Extra llama.cpp server arguments |
-| `HERMES_DASHBOARD_ARGS` | `--host 0.0.0.0 --port 9119 --no-open` | Arguments passed to `hermes dashboard` |
-| `HERMES_DASHBOARD_BASIC_AUTH_USERNAME` | (required) | Username for Hermes dashboard basic authentication — dashboard will not start if unset |
-| `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD` | (required) | Password for Hermes dashboard basic authentication — dashboard will not start if unset |
-| `HERMES_MODEL_BASE_URL` | `http://127.0.0.1:18000/v1` | OpenAI-compatible endpoint Hermes should use by default |
-| `HERMES_MODEL` | auto-detected | Model name written into the default Hermes config when no custom config is supplied |
-| `HERMES_CONFIG_URL` | (none) | URL to download as `$HERMES_HOME/config.yaml` at startup |
-| `HERMES_CONFIG_B64` | (none) | Base64-encoded `config.yaml` content |
-| `HERMES_CONFIG_INLINE` | (none) | Literal `config.yaml` content |
-| `HERMES_HOME` | `${WORKSPACE:-/workspace}/.hermes` | Hermes runtime home for config/state data |
-| `HERMES_GATEWAY` | (none) | Set to `1` to enable the `hermes-gateway` Supervisor service (`hermes gateway run`) |
+---
 
-### Port Reference
+## 🧭 Quick Start (Vast.ai)
 
-| Service | External Port | Internal Port |
-|---------|---------------|---------------|
-| Instance Portal | 1111 | 11111 |
-| Hermes Dashboard | 9119 | 19119 |
-| Jupyter | 8080 | 18080 |
-| llama.cpp | (internal only) | 18000 |
+1. Open/import the provided Vast template definition:
+   - [`templates/default/template.yml`](./templates/default/template.yml)
+2. Launch an instance on Vast.ai using that template.
+3. Open the Hermes dashboard on port **`19119`**.
 
-## Service Management
+For template-specific details and fields, see:
+- [`templates/default/README.md`](./templates/default/README.md)
 
-Both services are Supervisor-managed:
+---
 
-```bash
-supervisorctl status llama hermes-agent hermes-gateway
-supervisorctl restart llama
-supervisorctl restart hermes-agent
-supervisorctl restart hermes-gateway
+## 🔌 Services & Ports
+
+| Service | Bind | Port | Public? |
+|---|---|---:|---|
+| llama-server | `127.0.0.1` | `18000` | ❌ No (internal only) |
+| Hermes dashboard | template-mapped | `19119` | ✅ Yes |
+| Jupyter (inherited) | base image default | `18080` | optional |
+| Instance Portal (inherited) | base image default | `11111` | optional |
+
+> 🔒 `llama-server` must remain private and bound to localhost.
+
+---
+
+## ⚙️ Runtime Configuration
+
+Hermes config is materialized at startup with this precedence:
+
+1. `HERMES_CONFIG_URL`
+2. `HERMES_CONFIG_B64`
+3. `HERMES_CONFIG_INLINE`
+4. Existing `$HERMES_HOME/config.yaml`
+5. Seed config (`ROOT/etc/hermes-agent/config.seed.yaml`)
+
+This allows per-instance configuration via environment variables without rebuilding the image.
+
+### Key environment variables
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LLAMA_MODEL` | from `HERMES_MODEL` | GGUF model repo for llama.cpp |
+| `LLAMA_ARGS` | `--host 127.0.0.1 --port 18000` | Extra llama-server args |
+| `HERMES_DASHBOARD_ARGS` | dashboard launch args | Hermes dashboard startup flags |
+| `HERMES_MODEL_BASE_URL` | `http://127.0.0.1:18000/v1` | OpenAI-compatible endpoint |
+| `HERMES_MODEL` | auto-detected | Model name written into Hermes config |
+| `HERMES_CONFIG_URL` | _(none)_ | Download config YAML |
+| `HERMES_CONFIG_B64` | _(none)_ | Base64-encoded config YAML |
+| `HERMES_CONFIG_INLINE` | _(none)_ | Inline config YAML |
+| `HERMES_HOME` | `${WORKSPACE:-/workspace}/.hermes` | Hermes runtime directory |
+
+---
+
+## 🏗 Repository Layout
+
+```text
+.
+├── Dockerfile
+├── ROOT/
+│   ├── etc/
+│   │   ├── hermes-agent/config.seed.yaml
+│   │   ├── supervisor/conf.d/hermes-agent.conf
+│   │   ├── vast_boot.d/05-llama-env.sh
+│   │   └── vast_capabilities.d/50-hermes-agent.yaml
+│   └── opt/supervisor-scripts/
+│       ├── hermes-agent.sh
+│       └── llama.sh
+├── templates/
+│   └── default/
+│       ├── README.md
+│       └── template.yml
+└── .github/workflows/push-hermes-to-ghcr.yml
 ```
 
-## Building From Source
+---
 
-```bash
-git clone https://github.com/y0uCeF/vastai-hermes-llamacpp.git
-cd vastai-hermes-llamacpp
+## 🤖 CI / Publishing
 
-docker buildx build \
-    --build-arg LLAMA_CPP_BASE=vastai/llama-cpp:b10182-cuda-12.9 \
-    --build-arg HERMES_REF=v2026.7.30 \
-    -t yournamespace/hermes-agent .
-```
+GitHub Actions builds and publishes the image on qualifying pushes to `main`.
 
-## Assumptions
+Workflow:
+- `.github/workflows/push-hermes-to-ghcr.yml`
 
-- The first version skips Hermes' optional browser install to keep the build non-interactive and container-friendly.
-- Hermes is served through the base-image Caddy/portal path; no additional public llama.cpp exposure is enabled.
-- Custom Hermes runtime configuration is expected through env-backed generation or a fetched config URL, not a mounted `config.yaml`.
+Published image:
+- `ghcr.io/y0ucef/hermes-agent:latest`
 
-## Licenses
+---
 
-This image ships vendor application(s) under the following license(s):
+## 🩺 Validation (maintainers)
 
-- **Hermes Agent** — MIT ([upstream](https://github.com/NousResearch/hermes-agent))
-- **llama.cpp** — MIT ([upstream](https://github.com/ggml-org/llama.cpp))
+- [ ] Image builds successfully in CI
+- [ ] `supervisorctl status` shows both `llama` and `hermes-agent` as running
+- [ ] Hermes dashboard is reachable on mapped port `19119`
+- [ ] Hermes connects to `http://127.0.0.1:18000/v1`
 
-See `/LICENSES.md` in the image for license details and file locations.
+---
+
+## 🛠 Troubleshooting
+
+### Dashboard unavailable
+- Verify the template maps/exposes port `19119`
+- Check `hermes-agent` supervisor logs
+
+### Hermes cannot reach model endpoint
+- Confirm `llama` process is healthy on `127.0.0.1:18000`
+- Confirm `HERMES_MODEL_BASE_URL=http://127.0.0.1:18000/v1`
+
+### Unexpected model/config behavior
+- Set `LLAMA_MODEL` and/or `HERMES_MODEL` explicitly
+- Inspect effective runtime env and generated config
+
+---
+
+## 📄 License & Notices
+
+See:
+- `ROOT/LICENSES.md`
+- Upstream project licenses (`Hermes Agent`, `llama.cpp`, base image dependencies)
