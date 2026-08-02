@@ -4,7 +4,7 @@ A Hermes Agent image derived from the Vast.ai [llama.cpp image](https://hub.dock
 
 ## How This Image Works
 
-This image extends a concrete `vastai/llama-cpp` base (`b10182-cuda-12.9`) with a pinned Hermes Agent install (`v2026.7.20`) using Hermes' documented Linux installer flow in non-interactive mode.
+This image extends a concrete `vastai/llama-cpp` base (`b10182-cuda-12.9`) with a pinned Hermes Agent install (`v2026.7.31`) using Hermes' documented Linux installer flow in non-interactive mode.
 
 At runtime:
 
