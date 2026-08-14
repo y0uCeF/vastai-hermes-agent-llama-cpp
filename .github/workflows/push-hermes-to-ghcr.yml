@@ -2,8 +2,8 @@ name: Push Hermes Agent to GHCR
 
 env:
   IMAGE_NAME: ghcr.io/y0ucef/hermes-agent-llama-cpp
-  HERMES_REF: v2026.7.30
-  LLAMA_CPP_REF: b10182-cuda-12.9
+  HERMES_REF: v2026.8.13
+  LLAMA_CPP_REF: b10331-cuda-12.9
 
 on:
   push:
