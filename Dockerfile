@@ -12,9 +12,7 @@ LABEL maintainer="Vast.ai Inc <contact@vast.ai>"
 
 COPY ./ROOT /
 
-# Build-time install uses the default workspace path. Runtime HERMES_HOME
-# defaulting is handled in /opt/supervisor-scripts/hermes-agent.sh via
-# ${WORKSPACE:-/workspace}/.hermes.
+# Build-time install uses the default workspace path.
 RUN \
     set -euo pipefail && \
     apt-get update && \
@@ -41,6 +39,8 @@ RUN \
     rm -rf /root/.cache
 
 ENV PATH="/root/.local/bin:${PATH}"
+ENV DATA_DIRECTORY=/workspace
+ENV HERMES_HOME=${DATA_DIRECTORY}/.hermes
 ENV HERMES_INSTALL_DIR=/opt/hermes-agent
 
 RUN env-hash > /.env_hash

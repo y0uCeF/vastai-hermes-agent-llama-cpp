@@ -87,7 +87,7 @@ At startup, `hermes-agent.sh` writes `$HERMES_HOME/config.yaml` from the first s
 | `HERMES_CONFIG_URL` | (none) | URL to download as `config.yaml` |
 | `HERMES_CONFIG_B64` | (none) | Base64-encoded `config.yaml` |
 | `HERMES_CONFIG_INLINE` | (none) | Literal `config.yaml` content |
-| `HERMES_HOME` | `${WORKSPACE:-/workspace}/.hermes` | Hermes runtime directory |
+| `HERMES_HOME` | `${DATA_DIRECTORY:-/workspace}/.hermes` | Hermes runtime directory |
 
 ## How to Build
 

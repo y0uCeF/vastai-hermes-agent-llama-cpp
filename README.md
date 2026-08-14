@@ -81,7 +81,7 @@ This allows per-instance configuration via environment variables without rebuild
 | `HERMES_CONFIG_URL` | _(none)_ | Download config YAML |
 | `HERMES_CONFIG_B64` | _(none)_ | Base64-encoded config YAML |
 | `HERMES_CONFIG_INLINE` | _(none)_ | Inline config YAML |
-| `HERMES_HOME` | `${WORKSPACE:-/workspace}/.hermes` | Hermes runtime directory |
+| `HERMES_HOME` | `${DATA_DIRECTORY:-/workspace}/.hermes` | Hermes runtime directory |
 | `AUTH_EXCLUDE` | _(none)_ | Ports to exclude from Vast.ai authentication (defaults to `9119,8000` — Hermes Dashboard has basic auth, llama.cpp API uses `--api-key`) |
 
 ---
