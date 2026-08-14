@@ -1,5 +1,5 @@
 # Hermes Agent
-> **[Create an Instance](https://cloud.vast.ai/?ref_id=68321&creator_id=68321&name=Hermes%20Agent)**
+> **[Create an Instance](https://cloud.vast.ai/?ref_id=633005&creator_id=633005&name=Hermes%20Agent)**
 
 ## What is this template?
 
@@ -24,21 +24,25 @@ It is meant for users who want a self-hosted Hermes deployment without separatel
 ## Quick Start Guide
 
 ### Step 1: Launch
-Click **"[Rent](https://cloud.vast.ai/?ref_id=68321&creator_id=68321&name=Hermes%20Agent)"** on a GPU instance that fits the model you want to run.
+Click **"[Rent](https://cloud.vast.ai/?ref_id=633005&creator_id=633005&name=Hermes%20Agent)"** on a GPU instance that fits the model you want to run.
 
-### Step 2: Set required dashboard auth
-Before launch, set both of these environment variables:
+### Step 2: Set required environment variables
+Before launch, set these environment variables in the Vast.ai instance env vars:
 
 - `HERMES_DASHBOARD_BASIC_AUTH_USERNAME`
 - `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD`
 
 The dashboard will not start without them.
 
+> **Tip:** `LLAMA_API_KEY` is optional (defaults to `hermes`). Set it to a custom value if you expose the llama.cpp API externally (port `8000`). If you only need the Hermes dashboard and don't require direct access to the llama.cpp API, you can also remove the `llama.cpp API` entry from `PORTAL_CONFIG` to keep the portal clean.
+
 ### Step 3: Wait for setup
 The image starts `llama-server` first, waits for the local OpenAI-compatible endpoint to become healthy, materializes Hermes' `config.yaml`, and then starts the Hermes dashboard.
 
 ### Step 4: Open Hermes Agent
 Open the **Hermes Dashboard** entry in the Instance Portal. The dashboard binds to `0.0.0.0` so Vast can publish it through the portal, and the image requires basic auth for protection. llama.cpp remains internal-only on `127.0.0.1:18000`.
+
+You can also connect the **Hermes Desktop app** to this instance: use the remote-gateway login feature in Hermes Desktop and point it at the dashboard URL exposed by this template (port `9119`).
 
 ---
 
@@ -112,9 +116,10 @@ For the full list of supported Hermes config keys, see the upstream Hermes docum
 | Service | External Port | Internal Port |
 |---------|---------------|---------------|
 | Instance Portal | 1111 | 11111 |
-| Hermes Dashboard | 9119 | 19119 |
+| Hermes Dashboard | 9119 | 9119 |
+| llama.cpp API | 8000 | 18000 |
 | Jupyter | 8080 | 18080 |
-| llama.cpp | not exposed | 18000 |
+| llama.cpp (internal) | not exposed | 18000 |
 
 ---
 
@@ -125,7 +130,8 @@ For the full list of supported Hermes config keys, see the upstream Hermes docum
 | `HERMES_MODEL` | `unsloth/Qwen3.6-27B-GGUF:UD-Q4_K_XL` | Default model name for the template and the seeded Hermes config |
 | `LLAMA_MODEL` | inherits `HERMES_MODEL` if unset | HuggingFace GGUF repo loaded by the bundled llama.cpp server |
 | `LLAMA_ARGS` | `--host 127.0.0.1 --port 18000` | Extra llama.cpp server arguments |
-| `HERMES_DASHBOARD_ARGS` | `--host 0.0.0.0 --port 19119 --no-open` | Arguments passed to `hermes dashboard` |
+| `LLAMA_API_KEY` | `hermes` | API key for llama.cpp. Used by `llama-server --api-key`, by Hermes to authenticate with the local model endpoint (`hermes config set model.api_key`), and to access the llama.cpp API on port `8000` (excluded from Vast.ai auth via `AUTH_EXCLUDE`) |
+| `HERMES_DASHBOARD_ARGS` | `--host 0.0.0.0 --port 9119 --no-open` | Arguments passed to `hermes dashboard` |
 | `HERMES_DASHBOARD_BASIC_AUTH_USERNAME` | (required) | Username for Hermes dashboard basic authentication |
 | `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD` | (required) | Password for Hermes dashboard basic authentication |
 | `HERMES_MODEL_PROVIDER` | `custom` | Provider written into the seeded Hermes config |
@@ -137,6 +143,7 @@ For the full list of supported Hermes config keys, see the upstream Hermes docum
 | `HERMES_GATEWAY` | (none) | Set to `1` to enable the `hermes-gateway` Supervisor service |
 | `HERMES_LLAMA_HEALTH_URL` | `${HERMES_MODEL_BASE_URL%/v1}/health` | Health endpoint checked before Hermes starts |
 | `HERMES_LLAMA_TIMEOUT` | `3600` | Seconds to wait for llama.cpp to become healthy |
+| `AUTH_EXCLUDE` | (none) | Comma-separated list of ports to exclude from Vast.ai authentication. Defaults to `9119,8000` — skips Vast auth for the Hermes Dashboard (which has its own basic auth) and the llama.cpp API (which uses `--api-key`) |
 
 ---
 

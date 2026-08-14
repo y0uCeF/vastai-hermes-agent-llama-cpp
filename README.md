@@ -29,8 +29,13 @@ This repository produces a container image intended to run on **Vast.ai** with:
 
 ## 🧭 Quick Start (Vast.ai)
 
-1. Click **[Create an Instance](https://cloud.vast.ai/?ref_id=68321&creator_id=68321&name=Hermes%20Agent)**.
-2. Open the Hermes dashboard on port **`19119`** from the Instance Portal.
+1. Click **[Create an Instance](https://cloud.vast.ai/?ref_id=633005&creator_id=633005&name=Hermes%20Agent)**.
+2. Set the dashboard auth environment variables (`HERMES_DASHBOARD_BASIC_AUTH_USERNAME`, `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD`) in the Vast.ai instance env vars.
+3. Open the Hermes dashboard on port **`9119`** from the Instance Portal.
+
+> **Tip:** `LLAMA_API_KEY` is optional (defaults to `hermes`). Set it to a custom value if you expose the llama.cpp API externally (port `8000`). If you only need the Hermes dashboard, remove the `llama.cpp API` entry from `PORTAL_CONFIG` to keep the portal clean.
+
+You can also connect the **Hermes Desktop app** (Linux, macOS, Windows) to this instance using the remote-gateway login feature — point it at the dashboard URL exposed by the template.
 
 For template-specific fields and advanced configuration options, see:
 - [`templates/default/README.md`](./templates/default/README.md)
@@ -42,7 +47,8 @@ For template-specific fields and advanced configuration options, see:
 | Service | Bind | Port | Public? |
 |---|---|---:|---|
 | llama-server | `127.0.0.1` | `18000` | ❌ No (internal only) |
-| Hermes dashboard | template-mapped | `19119` | ✅ Yes |
+| llama.cpp API | template-mapped | `8000` (→18000) | ✅ Yes (with `--api-key`) |
+| Hermes dashboard | template-mapped | `9119` | ✅ Yes (basic auth) |
 | Jupyter (inherited) | base image default | `18080` | optional |
 | Instance Portal (inherited) | base image default | `11111` | optional |
 
@@ -68,6 +74,7 @@ This allows per-instance configuration via environment variables without rebuild
 |---|---|---|
 | `LLAMA_MODEL` | from `HERMES_MODEL` | GGUF model repo for llama.cpp |
 | `LLAMA_ARGS` | `--host 127.0.0.1 --port 18000` | Extra llama-server args |
+| `LLAMA_API_KEY` | `hermes` | API key for llama.cpp. Used by `llama-server --api-key`, by Hermes to authenticate with the local model endpoint, and to access the llama.cpp API on external port `8000` |
 | `HERMES_DASHBOARD_ARGS` | dashboard launch args | Hermes dashboard startup flags |
 | `HERMES_MODEL_BASE_URL` | `http://127.0.0.1:18000/v1` | OpenAI-compatible endpoint |
 | `HERMES_MODEL` | auto-detected | Model name written into Hermes config |
@@ -75,6 +82,7 @@ This allows per-instance configuration via environment variables without rebuild
 | `HERMES_CONFIG_B64` | _(none)_ | Base64-encoded config YAML |
 | `HERMES_CONFIG_INLINE` | _(none)_ | Inline config YAML |
 | `HERMES_HOME` | `${WORKSPACE:-/workspace}/.hermes` | Hermes runtime directory |
+| `AUTH_EXCLUDE` | _(none)_ | Ports to exclude from Vast.ai authentication (defaults to `9119,8000` — Hermes Dashboard has basic auth, llama.cpp API uses `--api-key`) |
 
 ---
 
@@ -117,7 +125,7 @@ Published image:
 
 - [ ] Image builds successfully in CI
 - [ ] `supervisorctl status` shows both `llama` and `hermes-agent` as running
-- [ ] Hermes dashboard is reachable on mapped port `19119`
+- [ ] Hermes dashboard is reachable on mapped port `9119`
 - [ ] Hermes connects to `http://127.0.0.1:18000/v1`
 
 ---
@@ -125,7 +133,7 @@ Published image:
 ## 🛠 Troubleshooting
 
 ### Dashboard unavailable
-- Verify the template maps/exposes port `19119`
+- Verify the template maps/exposes port `9119`
 - Check `hermes-agent` supervisor logs
 
 ### Hermes cannot reach model endpoint

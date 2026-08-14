@@ -24,7 +24,7 @@ wait_for_llama() {
     local elapsed=0
 
     while (( elapsed < timeout )); do
-        if curl -sf "$health_url" >/dev/null 2>&1; then
+        if curl -sf -H "Authorization: Bearer ${LLAMA_API_KEY:-hermes}" "$health_url" >/dev/null 2>&1; then
             echo "llama.cpp is healthy at $health_url"
             return 0
         fi
@@ -37,7 +37,7 @@ wait_for_llama() {
 }
 
 fetch_llama_model_id() {
-    curl -sf "${HERMES_MODEL_BASE_URL%/}/models" 2>/dev/null | python3 -c 'import json,sys; data=json.load(sys.stdin); models=data.get("data") or []; print((models[0] or {}).get("id", "") if models else "")'
+    curl -sf -H "Authorization: Bearer ${LLAMA_API_KEY:-hermes}" "${HERMES_MODEL_BASE_URL%/}/models" 2>/dev/null | python3 -c 'import json,sys; data=json.load(sys.stdin); models=data.get("data") or []; print((models[0] or {}).get("id", "") if models else "")'
 }
 
 materialize_config() {
@@ -70,6 +70,7 @@ materialize_config() {
         pty hermes config set model.default "$resolved_model"
         pty hermes config set model.provider "custom"
         pty hermes config set model.base_url "${HERMES_MODEL_BASE_URL}"
+        pty hermes config set model.api_key "${LLAMA_API_KEY:-hermes}"
         return 0
     fi
 }

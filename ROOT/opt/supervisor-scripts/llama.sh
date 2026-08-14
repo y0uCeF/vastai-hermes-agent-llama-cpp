@@ -14,7 +14,7 @@ done
 
 cd "${WORKSPACE}/"
 if [[ -n "${LLAMA_MODEL:-}" ]]; then
-  pty llama-server -hf "$LLAMA_MODEL" ${LLAMA_ARGS:---host 127.0.0.1 --port 18000} 2>&1
+  pty llama-server -hf "$LLAMA_MODEL" --api-key "${LLAMA_API_KEY:-hermes}" ${LLAMA_ARGS:---host 127.0.0.1 --port 18000} 2>&1
 else
   echo "Model not specified. Exiting"
   sleep 6
