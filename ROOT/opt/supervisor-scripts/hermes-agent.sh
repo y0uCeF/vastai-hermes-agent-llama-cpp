@@ -7,7 +7,7 @@ utils=/opt/supervisor-scripts/utils
 . "${utils}/exit_portal.sh" "Hermes Dashboard"
 
 export HERMES_INSTALL_DIR="${HERMES_INSTALL_DIR:-/opt/hermes-agent}"
-export HERMES_HOME="${HERMES_HOME:-${WORKSPACE:-/workspace}/.hermes}"
+export HERMES_HOME="${HERMES_HOME:-${DATA_DIRECTORY:-/workspace}/.hermes}"
 export HERMES_MODEL_PROVIDER="${HERMES_MODEL_PROVIDER:-custom}"
 export HERMES_MODEL_BASE_URL="${HERMES_MODEL_BASE_URL:-http://127.0.0.1:18000/v1}"
 

@@ -15,7 +15,7 @@ It is meant for users who want a self-hosted Hermes deployment without separatel
 - Keep the bundled llama.cpp server private to the container
 - Tune Hermes with launch-time environment variables
 - Seed or replace the full Hermes `config.yaml` from env data
-- Persist Hermes config, sessions, skills, logs, and memories under `${WORKSPACE:-/workspace}/.hermes`
+- Persist Hermes config, sessions, skills, logs, and memories under `${DATA_DIRECTORY:-/workspace}/.hermes`
 - Use a Vast.ai provisioning script to run `hermes config set ...` before the dashboard starts
 - Enable the optional Hermes gateway service for messaging integrations
 
@@ -48,7 +48,7 @@ You can also connect the **Hermes Desktop app** to this instance: use the remote
 
 ## How Hermes configuration is created
 
-On startup, the image writes `${HERMES_HOME:-${WORKSPACE:-/workspace}/.hermes}/config.yaml` from the first source that matches:
+On startup, the image writes `${HERMES_HOME:-${DATA_DIRECTORY:-/workspace}/.hermes}/config.yaml` from the first source that matches:
 
 1. `HERMES_CONFIG_URL`
 2. `HERMES_CONFIG_B64`
@@ -78,7 +78,7 @@ Common patterns:
 If you want to keep the default generated config and adjust a few keys, use a Vast.ai provisioning script. Example:
 
 ```bash
-export HERMES_HOME="${WORKSPACE:-/workspace}/.hermes"
+export HERMES_HOME="${DATA_DIRECTORY:-/workspace}/.hermes"
 
 hermes config set model.base_url http://127.0.0.1:18000/v1
 hermes config set model.default "${HERMES_MODEL:-${LLAMA_MODEL:-local-llama}}"
@@ -104,7 +104,7 @@ For the full list of supported Hermes config keys, see the upstream Hermes docum
 |--------|---------|
 | Hermes Dashboard | Primary user-facing web UI on port `19119` |
 | Private llama.cpp backend | Local-only OpenAI-compatible server on `127.0.0.1:18000` |
-| Workspace persistence | Hermes home, config, sessions, logs, skills, and memories live in `${WORKSPACE:-/workspace}/.hermes` |
+| Workspace persistence | Hermes home, config, sessions, logs, skills, and memories live in `${DATA_DIRECTORY:-/workspace}/.hermes` |
 | Config materialization | Runtime config can come from env vars, fetched content, an existing config file, or the baked seed config |
 | Optional gateway | `hermes gateway run` can be enabled under Supervisor with `HERMES_GATEWAY=1` |
 | Shared Vast runtime | Instance Portal, Jupyter, SSH, provisioning, and Supervisor are included |
@@ -139,7 +139,7 @@ For the full list of supported Hermes config keys, see the upstream Hermes docum
 | `HERMES_CONFIG_URL` | (none) | URL to fetch as `config.yaml` |
 | `HERMES_CONFIG_B64` | (none) | Base64-encoded `config.yaml` content |
 | `HERMES_CONFIG_INLINE` | (none) | Literal `config.yaml` content |
-| `HERMES_HOME` | `${WORKSPACE:-/workspace}/.hermes` | Hermes runtime home for config and state data |
+| `HERMES_HOME` | `${DATA_DIRECTORY:-/workspace}/.hermes` | Hermes runtime home for config and state data |
 | `HERMES_GATEWAY` | (none) | Set to `1` to enable the `hermes-gateway` Supervisor service |
 | `HERMES_LLAMA_HEALTH_URL` | `${HERMES_MODEL_BASE_URL%/v1}/health` | Health endpoint checked before Hermes starts |
 | `HERMES_LLAMA_TIMEOUT` | `3600` | Seconds to wait for llama.cpp to become healthy |
