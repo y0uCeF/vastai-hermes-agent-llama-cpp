@@ -51,8 +51,8 @@ The image extends `vastai/llama-cpp` (pinned to a specific base tag) and adds:
 
 | Arg | Default | Purpose |
 |-----|---------|---------|
-| `LLAMA_CPP_BASE` | `vastai/llama-cpp:b9264-cuda-12.9` | Base image providing llama-server and Vast.ai tooling |
-| `HERMES_REF` | `v2026.7.20` | Git tag of Hermes Agent to install |
+| `LLAMA_CPP_BASE` | `vastai/llama-cpp:v0.2.0-cuda-12.9` | Base image providing llama-server and Vast.ai tooling |
+| `HERMES_REF` | `v2026.8.31` | Git tag of Hermes Agent to install |
 
 ### Services
 
@@ -96,8 +96,8 @@ git clone https://github.com/y0uCeF/vastai-hermes-llamacpp.git
 cd vastai-hermes-llamacpp
 
 docker buildx build \
-    --build-arg LLAMA_CPP_BASE=vastai/llama-cpp:b9264-cuda-12.9 \
-    --build-arg HERMES_REF=v2026.7.20 \
+    --build-arg LLAMA_CPP_BASE=vastai/llama-cpp:v0.2.0-cuda-12.9 \
+    --build-arg HERMES_REF=v2026.8.31 \
     -t yournamespace/hermes-agent .
 ```
 
@@ -131,7 +131,7 @@ Shell scripts in `ROOT/` can be linted with `shellcheck` if available, but there
 
 ## Conventions
 
-- Keep `HERMES_REF` pinned to an exact tag (e.g. `v2026.7.20`), not a branch or `latest`.
+- Keep `HERMES_REF` pinned to an exact tag (e.g. `v2026.8.31`), not a branch or `latest`.
 - Keep `LLAMA_CPP_BASE` pinned to an exact image digest or tag.
 - Do not expose `llama-server` on a public port; it must remain on `127.0.0.1`.
 - Do not add secrets or credentials to any file tracked by git.
